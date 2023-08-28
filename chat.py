@@ -3,6 +3,7 @@ import openai
 import os
 import pyperclip
 from colorama import Fore, Style
+from rich.console import Console
 from rich.markdown import Markdown
 
 class Chatbot:
@@ -23,7 +24,9 @@ class Chatbot:
 
     def display(self, str):
         print(Fore.WHITE)
-        print(str)
+        md = Markdown(str)
+        console = Console()
+        console.print(md)
         print(Style.RESET_ALL, end="")        
 
     def process_query(self, query):
