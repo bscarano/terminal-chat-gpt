@@ -2,6 +2,7 @@
 import openai
 import os
 import pyperclip
+import curses
 from colorama import Fore, Style
 from rich.console import Console
 from rich.markdown import Markdown
@@ -18,16 +19,24 @@ class Chatbot:
         self.blank_lines = 0
 
     def chat_completion(self):
-        response = openai.ChatCompletion.create(model=self.MODEL, messages=self.messages)
-        answer = response.choices[0].message.content.strip()
-        return answer
+        response = openai.ChatCompletion.create(model=self.MODEL, messages=self.messages, stream=True)
 
-    def display(self, str):
         print(Fore.WHITE)
-        md = Markdown(str)
         console = Console()
-        console.print(md)
-        print(Style.RESET_ALL, end="")        
+
+        answer = ""
+        for chunk in response:
+            finish_reason = chunk['choices'][0]['finish_reason']
+            if finish_reason == 'stop':
+                break
+
+            content = chunk['choices'][0]['delta']['content']
+            answer = answer + content
+
+            console.print(content, end="")
+
+        print(Style.RESET_ALL)
+        return answer
 
     def process_query(self, query):
         new_messages = self.messages
@@ -38,7 +47,6 @@ class Chatbot:
         self.messages.append({'role': 'assistant', 'content': answer})
         self.count = self.count + 1
 
-        self.display(answer)
         print()
 
     def paste(self):
