@@ -1,3 +1,5 @@
+![Demo](./demo.gif)
+
 # Prerequisites
 - Setup an account with OpenAI
 - You'll need access to GPT-4 (minimum billing requirement with OpenAI)
